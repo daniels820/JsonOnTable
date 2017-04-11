@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>test</title>
+
+    <link rel="stylesheet" href="assets/font-awesome-4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" type="text/css" href="css/style.css">
+
+    <script src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-3.2.0.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.0/jquery.min.js"></script>
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"
+            integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa"
+            crossorigin="anonymous"></script>
+    <script data-require="angular.js@1.0.x" src="https://ajax.googleapis.com/ajax/libs/angularjs/1.0.8/angular.min.js"
+            data-semver="1.0.8"></script>
+
+    <!-- local js -->
+    <script src="js/app.js"></script>
+    <script src="js/controllers/tableController.js"></script>
+
+
+</head>
+<body ng-app="app" ng-controller='TableCtrl'>
+
+<div class="container">
+
+    <div class="row toolbar" style="padding: 15px">
+        <span class="dropdown col-md-2" style="padding: 0px; top: 7px;">
+            <button class="btn btn-warning dropdown-toggle" style="width: 100%;" type="button" data-toggle="dropdown">OPTIONS
+            <span class="caret"></span></button>
+            <ul class="dropdown-menu">
+            <li><a href="#" ng-click="reset()">RESET LIST</a></li>
+            <!--<li><a href="#">FETCH</a></li>-->
+        </ul>
+
+        </span>
+        <div class="col-md-1"></div>
+        <div class="col-md-6 form-search form-inline" style="display: inline;">
+            <input ng-model="searchBox" type="text" class="search-query" placeholder="Search..."/>
+        </div>
+
+        <!--<button type="button" class="btn btn-success" ng-click="addNew()">Add row</button>-->
+
+        <div class="col-md-1"></div>
+        <input type="submit" style=" top: 7px;" class="col-md-2 btn btn-success addnew " ng-click="addNewRow()" value="ADD NEW">
+    </div>
+
+    <div id="container">
+        <table  class=" container table ">
+
+            <thead>
+            <tr>
+                <th data-key="Name">
+                    <a href="#" ng-click="sortType = 'Name'; sortReverse = !sortReverse"> Name
+                    <span ng-show="sortType == 'Name' && !sortReverse" class="fa fa-caret-down"></span>
+                    <span ng-show="sortType == 'Name' && sortReverse" class="fa fa-caret-up"></span>
+                    </a>
+                </th>
+                <th  data-key="Address">
+                    <a href="#" ng-click="sortType = 'Address'; sortReverse = !sortReverse">   Address
+                    <span ng-show="sortType == 'Address' && !sortReverse" class="fa fa-caret-down"></span>
+                    <span ng-show="sortType == 'Address' && sortReverse" class="fa fa-caret-up"></span>
+                    </a>
+                </th>
+                <th class="sortable asc" data-key="Phone Number">Phone Number </th>
+                <th>Image</th>
+
+                <th>Actions</th>
+            </tr>
+            </thead>
+
+            <tbody>
+
+            <!--The adding new person HTML-->
+            <tr ng-show="addingNewRow ">
+                <form id="form" data-toggle="validator" role="form" novalidate>
+                    <td>
+                        <div class="form-group">
+                            <input type="text" class="form-control" name="name" ng-model="name" required/>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="form-group">
+                            <input type="text" class="form-control" name="Address" ng-model="Address" required/>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="form-group">
+                            <input type="number" class="form-control" name="PhoneNumber" ng-model="PhoneNumber" required/>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="form-group">
+                            <input type="text" class="form-control" name="Img" ng-model="Img" required/>
+                        </div>
+                    </td>
+                    <td>
+
+                        <div class="form-group" style="white-space: nowrap">
+                            <button type="button" class="btn btn-danger" ng-click="cancel()">CANCEL</button>
+                            <input type="submit" class=" btn btn-success addnew " ng-click="addRow()" value="ADD">
+
+
+                        </div>
+                    </td>
+                </form>
+            </tr>
+
+            <!--The Table with the ng-show function -->
+            <tr ng-hide="updateBool" ng-repeat="person in people | orderBy:sortType:sortReverse | filter:searchBox">
+                <td>{{person.Name}}</td>
+                <td>{{person.Address}}</td>
+                <td>{{person["Phone Number"]}} <i class="fa fa-phone" aria-hidden="true"></i></td>
+                <td><img style="max-width: 128px" src='{{person["Image URL"]}}'/></td>
+                <td style="white-space: nowrap">
+                    <button type="button" class="btn btn-info" ng-click="editContent(person)" ng-init="index=$index">UPDATE</button>
+                    <button type="button" class="btn btn-danger"  ng-click="delete(person)">DELETE</button>
+                </td>
+
+
+            <tr  ng-show="updateBool">
+                    <td > <input type="text" ng-model="editablerow.Name" /></td>
+                    <td> <input type="text" ng-model="editablerow.Address" /></td>
+                    <td> <input type="tel" ng-model="editablerow['Phone Number']" /></td>
+                    <td> <input style="max-width: 128px" type="text" ng-model="editablerow['Image URL']" /></td>
+                    <td style="white-space: nowrap">
+                        <button type="button" class="btn btn-danger" ng-click="cancel()">CANCEL</button>
+                        <button type="button" class="btn btn-success" ng-click="saveData()">SAVE</button>
+
+                    </td>
+                </tr>
+
+
+            </tbody>
+        </table>
+
+
+        <!--<script type="text/ng-template" id="view">-->
+            <!--<td>{{person.Name}}</td>-->
+            <!--<td>{{person.Address}}</td>-->
+            <!--<td>{{person["Phone Number"]}}</td>-->
+            <!--<td><img style="max-width: 128px" src='{{person["Image URL"]}}'/></td>-->
+            <!--<td style="white-space: nowrap">-->
+                <!--<button type="button" class="btn btn-success" ng-click="editContent(person)">UPDATE</button>-->
+                <!--<button type="button" class="btn btn-danger" style="float:right;" ng-click="delete($index)">DELETE</button>-->
+            <!--</td>-->
+
+
+
+
+        <!--</script>-->
+
+
+        <!--<script type="text/ng-template" id="edit">-->
+            <!---->
+
+            <!--<td>is</td>-->
+            <!--<td>good</td>-->
+            <!--<td><img style="max-width: 128px" src='{{person["Image URL"]}}'/></td>-->
+            <!--&lt;!&ndash;ng-hide="!person.Name"    &ndash;&gt;-->
+            <!--<td style="white-space: nowrap">-->
+                <!--<button type="button" class="btn btn-info" ng-click="editContent(person)">UPDATE</button>-->
+                <!--<button type="button" class="btn btn-danger "-->
+                        <!--style="float:right;" ng-click="delete($index)">DELETE</button>-->
+            <!--</td>-->
+            <!--<span ng-if="editablerow">-->
+
+            <!--<td> <input type="text" ng-model="editablerow.Name" /></td>-->
+            <!--<td> <input type="text" ng-model="editablerow.Address" /></td>-->
+            <!--<td> <input type="tel" ng-model="editablerow['Phone Number']" /></td>-->
+            <!--<td> <input style="max-width: 128px" type="text" ng-model="editablerow['Image URL']" /></td>-->
+            <!--<td style="white-space: nowrap">-->
+                <!--<button type="button" class="btn btn-success" ng-click="saveData($index)">Save</button>-->
+                <!--<button type="button" class="btn btn-danger" style="float:right;" ng-click="reset()">Cancel</button>-->
+            <!--</td>-->
+            <!--</span>-->
+
+        <!--</script>-->
+
+        </tr>
+
+    </div>
+
+</div>
+
+</body>
+</html>
